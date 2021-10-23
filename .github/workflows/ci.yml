@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.TOKEN }}
+  GITHUB_SHA: ${{ github.sha }}
+
+jobs:
+  test:
+    name: test
+    runs-on: self-hosted-cpu
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run test
+        run: make test-up
+
+      - name: Post Run test
+        if: ${{ always() }}
+        run: make test-down
