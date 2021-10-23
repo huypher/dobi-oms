@@ -1,47 +1,42 @@
 package auth
 
 import (
+	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/pghuy/dobi-oms/domain"
 )
 
 func Test_genJWT(t *testing.T) {
-	type args struct {
-		acc       *domain.Account
-		secretJWT string
+	t.Parallel()
+
+	acc := &domain.Account{
+		ID:       1,
+		UserName: "username",
+		Password: "password",
+		Name:     "name",
 	}
-	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
+
+	secretJWT := "jwtToken"
+
+	testCases := []struct {
+		name string
+		acc  *domain.Account
+		err  error
 	}{
-		// TODO: Add test cases.
-		{
-			name: "test",
-			args: args{
-				acc: &domain.Account{
-					ID:       1,
-					UserName: "huy",
-					Password: "huy",
-					Name:     "huy",
-				},
-				secretJWT: "jwtToken",
-			},
-			want:    "",
-			wantErr: false,
-		},
+		{"test", acc, nil},
+		{"test", nil, errors.New("user empty")},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := genJWT(tt.args.acc, tt.args.secretJWT)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("genJWT() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("genJWT() got = %v, want %v", got, tt.want)
+	for _, testCase := range testCases {
+		tc := testCase
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := genJWT(tc.acc, secretJWT)
+			require.Equal(t, tc.err, err)
+			if tc.err == nil {
+				require.NotEmpty(t, got)
 			}
 		})
 	}
