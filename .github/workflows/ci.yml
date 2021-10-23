@@ -10,7 +10,7 @@ env:
 jobs:
   test:
     name: test
-    runs-on: self-hosted-cpu
+    runs-on: ubuntu-latest
     steps:
 
       - name: Checkout repository
